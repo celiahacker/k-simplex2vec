@@ -4,3 +4,4 @@ We present a novel method of associating Euclidean features to simplicial comple
 
 * Paper: [`arXiv:2010.05636`][paper]
  
+ [paper]: https://arxiv.org/abs/2010.05636
