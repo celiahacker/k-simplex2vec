@@ -1,13 +1,9 @@
-#import scipy 
 import gudhi
 import numpy as np
-#import scipy.io as sio
 from numpy import matlib
 import random
 import gensim
 from gensim.models import Word2Vec
-#import re
-#import sklearn
 import scipy.sparse
 
 # Some function that will be useful for the rest of the code 
@@ -23,7 +19,7 @@ def signed_cofaces(s, cplx):
 	# returns all cofaces (of codim 1)  of simplex s 
     return [(sign(s, x), x) for (x, eps) in cplx.get_cofaces(s, 1)]    
 
-def sign(s, t): # Sign of s in t. UB if s is not a face of t, condition not checked.
+def sign(s, t): # Sign of s in t. 
     if len(t) != len(s) + 1:
         return None
 
@@ -37,15 +33,12 @@ def hacky_get_idx(s, cplx):
 	# Get index of the simplices 
     i = cplx.filtration(s)
     assert(i.is_integer())
-    return int(i)
+    return int(i)   
 
-
-    
-
-def assemble(cplx, k, scheme = "uniform", laziness = None):   
-    # 16,777,217 is the first integer that cannot be represented as a
-    # float.  We are using this incredibly ugly hack to store simplex
-    # indices as filtration values since keys are not accessible
+def assemble(cplx, k, scheme = "uniform", laziness = None): 
+    ## Assmeble the transition matrix 
+    # We are using this incredibly ugly hack to store the indices of the simplices 
+    # as filtration values since keys are not accessible
     # through the GUDHI Python API.
     assert(cplx.num_simplices() < 16777217)
 
@@ -138,13 +131,17 @@ def walk(smplx, walk_length, P):
         RW.append(smplx)
     return(RW)
 
-def RandomWalks(walk_length, number_walks, P): 
+def RandomWalks(walk_length, number_walks, P, seed = None): 
     ## Performs a fixed number of random walks at each $k$-simplex
     Walks=[] ## List where we store all random walks of length walk_length 
     for i in range(number_walks):
         for smplx in range(P.shape[0]): 
             Walks.append(walk(smplx, walk_length, P))
-    np.random.shuffle(Walks)
+    if seed != None: 
+        np.random.seed(seed)
+        np.random.shuffle(Walks)
+    else: 
+        np.random.shuffle(Walks)
     return Walks 
 
 def save_random_walks(Walks,filename): 
@@ -182,8 +179,7 @@ def Embedding(Walks, emb_dim, epochs =5 ,filename ='k-simplex2vec_embedding.mode
             ls_temp.append(string)
         walks_str.append(ls_temp)
    
-    model = Word2Vec(walks_str, size=emb_dim, window=window_size =  3, min_count=0, sg=1, workers=1, iter=epochs)
+    model = Word2Vec(walks_str, size=emb_dim, window =  3, min_count=0, sg=1, workers=1, iter=epochs)
     model.save(filename)
     return model
-
-## Sort the vectors so they are in the same order as they are.  
+  
