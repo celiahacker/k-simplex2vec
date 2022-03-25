@@ -179,7 +179,7 @@ def Embedding(Walks, emb_dim, epochs =5 ,filename ='k-simplex2vec_embedding.mode
             ls_temp.append(string)
         walks_str.append(ls_temp)
    
-    model = Word2Vec(walks_str, size=emb_dim, window =  3, min_count=0, sg=1, workers=1, iter=epochs)
+    model = Word2Vec(walks_str, vector_size=emb_dim, window =  3, min_count=0, sg=1, workers=1, epochs=5)
     model.save(filename)
     return model
   
